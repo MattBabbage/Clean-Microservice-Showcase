@@ -1,20 +1,35 @@
-# CleanMicroservice (Messaging Microservice)
-This is a clean microservice designed to showcase the following:
-- Code Structure
-- Caching (Using client server caching with Redis)
-- Persistent store management
-- Unit Testing
-- Integration tests
+## Design Decisions:
+**What is this project?**
+This is a Microservice created using the Minimal API Structure.
+A potential use case could be a 'travel social media company' which allows users to post a status at any location.
+
+**Things it does include:**
+✅ Service should maintain a cache
+✅ Service should maintain a persistent store of the looked-up values
+⏳ Unit tests
+⏳ Integration tests
+
+**Extra things I have added:** 
+✅ Documentation/Comments via Swagger - Wanted to learn how to do this on a minimal API
+✅ Rate Limiting - Core feature of most APIs
+
+**Does not include:**
+❌ Authentication - Avoid overcomplication/Not in spec
+❌ Authorization - Avoid overcomplication/Not in spec
+❌ IP from HTTP Context - More difficult to demonstrate and debug.
 
 
-## Use Case 
+## Design Decisions:
 
-Travel based social media / CRUD Posts
+**Project Structure** 🧱
+I have avoided using the traditional MVC setup in favour of minimal architecture, this is more fitting for a 'Microservice'.
 
-This microservice is an API for posting messages onto a public wall on this hypothetical app.
+Given that the project showcases some advanced API features, it is arguably at the limit of what a minimal structure can take before becoming messy (e.g. Parsing 5 parameters into a function whereas MVC could have dependency injected to a controller, perhaps neater).  
 
-Caching is used when retrieving all messages from a persistent store
-    - Saving time for all users to view most recent posts
+**Caching** 💾
+Chose to use Redis in an external store (Distributed Caching). This allows the service to be fully scalable in the future, and means the cache is resilient to service downtime.
 
-Location is included in each post (Hence the travel part)
-    - This can also be cached, stopping extra API calls on multiple posts
+**Database / Persistent Store** 📦
+MongoDB is used as a Database for:
+- Small singular table - would never use relational features of an RDBMS
+- Ease of use and setup - Emphasis is on the code not the use case
