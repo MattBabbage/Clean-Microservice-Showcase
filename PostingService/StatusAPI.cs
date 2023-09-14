@@ -35,20 +35,23 @@ public static class StatusAPI
     }
 
 
-    private static async Task<IResult> CreateStatus(StatusRequest statusRequest, IHttpClientFactory locationClientFactory, IMongoCollection<Status> collection, IDistributedCache cache,  IConfiguration config){
+    public static async Task<IResult> CreateStatus(StatusRequest statusRequest, IHttpClientFactory locationClientFactory, IMongoCollection<Status> collection, IDistributedCache cache,  IConfiguration config){
         //Get the location from the IP Address
         StatusLocation? location = await GetLocation(statusRequest, cache, locationClientFactory, config);
         //Check location found
         if (location is null)
             return Results.NotFound("Location not found");
         //Create, Insert and Return new status
-        Status status = new Status(statusRequest.Title, statusRequest.Message, location);
+        Status status = new Status{
+            Title = statusRequest.Title,
+            Content = statusRequest.Message,
+            Location = location
+        };
         await collection.InsertOneAsync(status);
         return Results.Ok(status);
-    
     }
 
-    private static async Task<StatusLocation?> GetLocation(StatusRequest statusRequest, IDistributedCache cache, IHttpClientFactory locationClientFactory, IConfiguration config){
+    public static async Task<StatusLocation?> GetLocation(StatusRequest statusRequest, IDistributedCache cache, IHttpClientFactory locationClientFactory, IConfiguration config){
             //Declare Location
             StatusLocation? location;
             //Check Cache for IP Lookup
@@ -71,7 +74,7 @@ public static class StatusAPI
             return location;
     }
 
-    private static async Task<IResult> GetStatuses(IMongoCollection<Status> collection, int page, int pageSize){
+    public static async Task<IResult> GetStatuses(IMongoCollection<Status> collection, int page, int pageSize){
         //Validate search query can happen
         if (page < 1 || pageSize < 1)
              return Results.NotFound($"Invalid page");
@@ -85,28 +88,33 @@ public static class StatusAPI
             return Results.NotFound("Not found");
         return Results.Ok(data);
     }
-    private static async Task<IResult> GetStatus(string id, IMongoCollection<Status> collection){
+    public static async Task<IResult> GetStatus(string id, IMongoCollection<Status> collection){
         //Select data where Id is found    
-        var data = await collection.Find(s => s.Id == id).ToListAsync();
+        var data = await collection.Find(s => s.Id == id).Limit(1).SingleAsync();
         //Check return exists and contains data
-        if (data is null || !data.Any())
+        if (data is null)
             return Results.NotFound("Not found");
         return Results.Ok(data);
     }
 
-    private static async Task<IResult> UpdateStatus(string id, Status updatedStatus, IMongoCollection<Status> collection){
+    public static async Task<IResult> UpdateStatus(string id, Status updatedStatus, IMongoCollection<Status> collection){
         //Find existing data
         var data = await collection.Find(s => s.Id == id).ToListAsync();
         //Check data exists
         if (data is null || !data.Any())
             return Results.NotFound("Not found");
         //Replace existing Data
-        await collection.ReplaceOneAsync(x => x.Id == id, updatedStatus);
-        return Results.Ok("Updated");
+        var replaceResult = await collection.ReplaceOneAsync(x => x.Id == id, updatedStatus);
+        if (replaceResult.IsAcknowledged)
+            return Results.Ok(updatedStatus);
+        return Results.NotFound("Nothing Found / No Update Made");
     }
-    private static async Task<IResult> DeleteStatus(string id, IMongoCollection<Status> collection){
+    public static async Task<IResult> DeleteStatus(string id, IMongoCollection<Status> collection){
         //Delete data with id
-        await collection.DeleteOneAsync(x => x.Id == id);
-        return Results.Ok("Deleted");
+        var deletion = await collection.DeleteOneAsync(x => x.Id == id);
+        //Deleted successfully or not found are only 2 possible outcomes with this db structure
+        if (deletion.IsAcknowledged)
+            return Results.Ok("Deleted");
+        return Results.NotFound("Deleted");
     }
 }
