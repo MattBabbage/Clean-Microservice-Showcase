@@ -79,6 +79,7 @@ public static class StatusAPI
         if (page < 1 || pageSize < 1)
              return Results.NotFound($"Invalid page");
         //Select all data withing the page limitations
+        //Find vs FindAsync -> this returns cursor which allows for better queries on big data
         var data = await collection.Find(_ => true)
                             .Skip((page - 1) * pageSize)
                             .Limit(pageSize)
