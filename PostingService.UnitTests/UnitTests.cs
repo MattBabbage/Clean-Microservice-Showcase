@@ -12,39 +12,21 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 public class StatusAPITests
 {
-    //Aim: Test the individual functions/units of the system using mock/fake interfaces
-    //This is all implemented using In-Memory equivilants to the "Production" equivilants:
-    // AddStackExchangeRedisCache (Container) -> Standard IDistributedCache  
-    // MongoDB (Container) -> EphemeralMongo 
+    public IMongoRunner MongoDBExecutor {get; set;}
+    public IMongoDatabase InMemoryDatabase {get;set;}
+    public IMongoCollection<Status> Collection {get; set;}
 
-    public StatusAPITests() {
-
-        // Status product = new Status("Unit Test Title","Unit Test Content",new StatusLocation(){
-        //         City = "Test City",
-        //         Region = "Test Region",
-        //         Country = ""
-        //     }){Id = ""};
-        // Status status = new Status{
-        //     Id = "",
-        //     Title = statusRequest.Title,
-        //     Content = statusRequest.Message,
-        //     Location = location
-        // };
+    public StatusAPITests(){
+        MongoDBExecutor = MongoRunner.Run();
+        InMemoryDatabase = new MongoClient(MongoDBExecutor.ConnectionString).GetDatabase("default");
+        InMemoryDatabase.CreateCollection("InMemory_statuses");
+        Collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
     }
 
-            // var expectedData = new byte[] { 100, 200 };
-        // var opts = Options.Create<MemoryDistributedCacheOptions>(new MemoryDistributedCacheOptions());
-        // IDistributedCache cache1 = new MemoryDistributedCache(opts);
-        // cache1.Set("key1", expectedData);
     [Fact]
     public void GetStatus_WithId()
     {
         // Arrange
-        //Setup in memory database
-        var runner = MongoRunner.Run();
-        var InMemoryDatabase = new MongoClient(runner.ConnectionString).GetDatabase("default");
-        InMemoryDatabase.CreateCollection("InMemory_statuses");
-        IMongoCollection<Status> collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
         //Create mock data
         Status InMemStatus = new Status(){
             Id = "ecc253b967a1b0067240e139",
@@ -56,10 +38,35 @@ public class StatusAPITests
                 Country = "TestCountry"
             }
         };
-        collection.InsertOne(InMemStatus);
-        //Act
-        var RetrievedStatus = StatusAPI.GetStatus(InMemStatus.Id, collection).Result as Ok<Status>;
-        //Assert
+        Collection.InsertOne(InMemStatus);
+        // Act
+        var RetrievedStatus = StatusAPI.GetStatus(InMemStatus.Id, Collection).Result as Ok<Status>;
+        // Assert
+        // Should be equivalent to acts as a deep copy check
         InMemStatus.Should().BeEquivalentTo(RetrievedStatus.Value);
+    }
+    
+    [Fact]
+    public void GetStatus_WithWrongId()
+    {
+        // Arrange
+        //No need to create data
+        // Act
+        var RetrievedStatus = StatusAPI.GetStatus("ecc253b967a1b0067240e333", Collection).Result as NotFound<string>;
+        // Assert
+        // Tested method with data found aswell, works as expected
+        RetrievedStatus.StatusCode.Should().Be(404);
+    }
+
+    [Fact]
+    public void GetStatus_WithInvalidId()
+    {
+        // Arrange
+        //No need to create data
+        // Act
+        var RetrievedStatus = StatusAPI.GetStatus(":)", Collection).Result as BadRequest<string>;
+        // Assert
+        // Tested method with data found aswell, works as expected
+        RetrievedStatus.StatusCode.Should().Be(400);
     }
 }

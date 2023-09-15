@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Swashbuckle.AspNetCore.Annotations;
-
+using MongoDB.Bson;
 
 public static class StatusAPI
 {
@@ -90,8 +90,11 @@ public static class StatusAPI
         return Results.Ok(data);
     }
     public static async Task<IResult> GetStatus(string id, IMongoCollection<Status> collection){
-        //Select data where Id is found    
-        var data = await collection.Find(s => s.Id == id).Limit(1).SingleAsync();
+        //Validate id - No possibility of injection but helps user
+        if (!ObjectId.TryParse(id, out _))
+            return Results.BadRequest("Invalid Id");
+        //Select data where Id is found    - no FindOne
+        var data = collection.Find(s => s.Id == id).SingleOrDefault<Status>();
         //Check return exists and contains data
         if (data is null)
             return Results.NotFound("Not found");
