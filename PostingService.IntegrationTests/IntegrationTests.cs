@@ -13,7 +13,6 @@ using System.Text.Json;
 public class IntegrationTests
 {
     //Aim: Test the main functionality of the application using the whole system (CRUD)
-    public string CreatedDataId = "";
 
     [Fact]
     public async Task CreateStatus()
@@ -28,8 +27,6 @@ public class IntegrationTests
         // Assert
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         Assert.NotNull(content);
-        //Given this test passed we can set the id for other tests
-        CreatedDataId = content.Id;
     }
     
     [Fact]
@@ -60,7 +57,7 @@ public class IntegrationTests
         //Create Data to read
         var createdResult = await client.PostAsJsonAsync("/Status", payload);
         var createdContent = await createdResult.Content.ReadFromJsonAsync<Status>();
-        CreatedDataId = createdContent.Id;
+        string CreatedDataId = createdContent.Id;
 
         var result = await client.GetAsync("/Status/"+CreatedDataId);
         var content = await result.Content.ReadFromJsonAsync<Status>();
@@ -84,7 +81,7 @@ public class IntegrationTests
         //Create Data to read
         var createdResult = await client.PostAsJsonAsync("/Status", payload);
         var createdContent = await createdResult.Content.ReadFromJsonAsync<Status>();
-        CreatedDataId = createdContent.Id;
+        string CreatedDataId = createdContent.Id;
         //Change some of the data
         createdContent.Title = "PostUpdate";
         //Update
@@ -110,7 +107,7 @@ public class IntegrationTests
         //Create Data to read
         var createdResult = await client.PostAsJsonAsync("/Status", payload);
         var createdContent = await createdResult.Content.ReadFromJsonAsync<Status>();
-        CreatedDataId = createdContent.Id;
+        string CreatedDataId = createdContent.Id;
 
         //Update
         var result = await client.DeleteAsync("/Status/"+CreatedDataId);

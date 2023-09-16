@@ -10,21 +10,21 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-public class StatusAPITests
+public class UpdateStatusTests
 {
     public IMongoRunner MongoDBExecutor {get; set;}
     public IMongoDatabase InMemoryDatabase {get;set;}
     public IMongoCollection<Status> Collection {get; set;}
-
-    public StatusAPITests(){
+    public UpdateStatusTests(){
         MongoDBExecutor = MongoRunner.Run();
         InMemoryDatabase = new MongoClient(MongoDBExecutor.ConnectionString).GetDatabase("default");
         InMemoryDatabase.CreateCollection("InMemory_statuses");
         Collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
     }
 
+    //GetStatus Tests
     [Fact]
-    public void GetStatus_WithId()
+    public void UpdateStatus_WithId()
     {
         // Arrange
         //Create mock data
@@ -38,33 +38,36 @@ public class StatusAPITests
                 Country = "TestCountry"
             }
         };
+        //Insert Data
         Collection.InsertOne(InMemStatus);
+        //Edit Data to test update
+        InMemStatus.Title = "ChangedTitle";
         // Act
-        var RetrievedStatus = StatusAPI.GetStatus(InMemStatus.Id, Collection).Result as Ok<Status>;
+        var RetrievedStatus = StatusAPI.UpdateStatus(InMemStatus.Id, InMemStatus, Collection).Result as Ok<Status>;
         // Assert
         // Should be equivalent to acts as a deep copy check
         InMemStatus.Should().BeEquivalentTo(RetrievedStatus.Value);
     }
     
     [Fact]
-    public void GetStatus_WithWrongId()
+    public void UpdateStatus_WithWrongId()
     {
         // Arrange
-        //No need to create data
+        string fakeId = "ecc253b967a1b0067240e333";
         // Act
-        var RetrievedStatus = StatusAPI.GetStatus("ecc253b967a1b0067240e333", Collection).Result as NotFound<string>;
+        var RetrievedStatus = StatusAPI.UpdateStatus(fakeId, new Status(), Collection).Result as NotFound<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(404);
     }
 
     [Fact]
-    public void GetStatus_WithInvalidId()
+    public void UpdateStatus_WithInvalidId()
     {
         // Arrange
-        //No need to create data
+        string invalidId = ":)";
         // Act
-        var RetrievedStatus = StatusAPI.GetStatus(":)", Collection).Result as BadRequest<string>;
+        var RetrievedStatus = StatusAPI.UpdateStatus(invalidId, new Status(), Collection).Result as BadRequest<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(400);

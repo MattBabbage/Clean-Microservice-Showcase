@@ -77,20 +77,20 @@ public static class StatusAPI
     public static async Task<IResult> GetStatuses(IMongoCollection<Status> collection, int page, int pageSize){
         //Validate search query can happen
         if (page < 1 || pageSize < 1)
-             return Results.NotFound($"Invalid page");
+             return Results.BadRequest($"Invalid page");
         //Select all data withing the page limitations
-        //Find vs FindAsync -> this returns cursor which allows for better queries on big data
+        //FindAsync -> this returns cursor which allows for better queries on big data (Future Improvement)
         var data = await collection.Find(_ => true)
                             .Skip((page - 1) * pageSize)
                             .Limit(pageSize)
                             .ToListAsync();
         //Check return exists and contains data
         if (data is null || !data.Any())
-            return Results.NotFound("Not found");
+            return Results.Ok(new List<Status>());
         return Results.Ok(data);
     }
     public static async Task<IResult> GetStatus(string id, IMongoCollection<Status> collection){
-        //Validate id - No possibility of injection but helps user
+        //Validate id - No possibility of injection but helps user in diagnosis
         if (!ObjectId.TryParse(id, out _))
             return Results.BadRequest("Invalid Id");
         //Select data where Id is found    - no FindOne
@@ -102,23 +102,32 @@ public static class StatusAPI
     }
 
     public static async Task<IResult> UpdateStatus(string id, Status updatedStatus, IMongoCollection<Status> collection){
-        //Find existing data
-        var data = await collection.Find(s => s.Id == id).ToListAsync();
-        //Check data exists
-        if (data is null || !data.Any())
-            return Results.NotFound("Not found");
-        //Replace existing Data
-        var replaceResult = await collection.ReplaceOneAsync(x => x.Id == id, updatedStatus);
-        if (replaceResult.IsAcknowledged)
+        //Validate id - No possibility of injection but helps user in diagnosis
+        if (!ObjectId.TryParse(id, out _))
+            return Results.BadRequest("Invalid Id");
+        //Create Filter and Update Spec
+        var SearchOneFilter = Builders<Status>.Filter.Eq(x => x.Id, id);
+        var updateDefinition = Builders<Status>.Update
+                .Set(s => s.Title, updatedStatus.Title)
+                .Set(s => s.Content, updatedStatus.Content)
+                .Set(s => s.Location, updatedStatus.Location);
+        
+        var replaceResult = await collection.UpdateOneAsync(SearchOneFilter, updateDefinition);
+
+        if (replaceResult.ModifiedCount == 1) //Acknowledgement doesnt work on deletion
             return Results.Ok(updatedStatus);
         return Results.NotFound("Nothing Found / No Update Made");
     }
     public static async Task<IResult> DeleteStatus(string id, IMongoCollection<Status> collection){
+        //Validate id - No possibility of injection but helps user in diagnosis
+        if (!ObjectId.TryParse(id, out _))
+            return Results.BadRequest("Invalid Id");
         //Delete data with id
-        var deletion = await collection.DeleteOneAsync(x => x.Id == id);
+        var deletion = collection.DeleteOne(x => x.Id == id);
         //Deleted successfully or not found are only 2 possible outcomes with this db structure
-        if (deletion.IsAcknowledged)
+        if (deletion.DeletedCount == 1) 
             return Results.Ok("Deleted");
+        //Not Deleted, not found
         return Results.NotFound("Deleted");
     }
 }
