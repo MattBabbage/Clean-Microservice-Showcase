@@ -3,7 +3,7 @@
 
 This is a Microservice created using the Minimal API Structure.
 
-It is a CRUD application for a 'travel social media company' to create posts/statuses publically with a location attached.
+It is a CRUD application for a 'travel social media company' to create posts/statuses publicly with a location attached.
 
 It Creates posts and attatches a location on creation based on IP. It also provides the other standard functionality which is expected of CRUD APIs.
 
@@ -38,6 +38,7 @@ Given that the project showcases some advanced API features, it is arguably at t
 **Caching** 💾
 
 Chose to use Redis in an external store (Distributed Caching). This allows the service to be fully scalable in the future, and means the cache is resilient to service downtime.
+It also means all services use same cache, adding consistency.
 
 **Database / Persistent Store** 📦
 
