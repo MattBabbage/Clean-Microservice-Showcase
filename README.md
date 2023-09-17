@@ -2,7 +2,10 @@
 **What is this project?**
 
 This is a Microservice created using the Minimal API Structure.
-A potential use case could be a 'travel social media company' which allows users to post a status at any location.
+
+It is a CRUD application for a 'travel social media company' to create posts/statuses publically with a location attached.
+
+It Creates posts and attatches a location on creation based on IP. It also provides the other standard functionality which is expected of CRUD APIs.
 
 **Things it does include:**
 
@@ -37,7 +40,7 @@ Chose to use Redis in an external store (Distributed Caching). This allows the s
 
 **Database / Persistent Store** 📦
 
-MongoDB is used as a Database for:
+MongoDB is used as a Database. This was chosen because:
 - Small singular table - would never use relational features of an RDBMS
 - Ease of use and setup - Emphasis is on the code not the use case
 
