@@ -20,7 +20,8 @@ public static class StatusAPI
 
         app.MapGet("/Statuses", (IMongoCollection<Status> collection, int page, int pageSize) => GetStatuses(collection, page, pageSize))
                                 .WithMetadata(new SwaggerOperationAttribute("Get all statuses in a paged fashion", "Get all data using a page and page size"))
-                                .RequireRateLimiting("fixed");
+                                .RequireRateLimiting("fixed")
+                                .CacheOutput("OutputCacheDemonstrator"); //Only caching output here as this is the only return with possible large data packet
 
         app.MapGet("/Status/{id}", (string id, IMongoCollection<Status> collection) =>  GetStatus(id, collection))
                                 .WithMetadata(new SwaggerOperationAttribute("Get singular status", "Get a singular status based on id"))

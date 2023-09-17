@@ -50,6 +50,12 @@ builder.Services.AddSingleton(_ => new MongoClient());
 builder.Services.AddSingleton(provider => provider.GetRequiredService<MongoClient>().GetDatabase(builder.Configuration.GetSection("MongoDB")["DatabaseName"]));
 builder.Services.AddSingleton(provider => provider.GetRequiredService<IMongoDatabase>().GetCollection<Status>(builder.Configuration.GetSection("MongoDB")["CollectionName"]));
 
+//Adding Output Caching - Not super necessary but good feature for people refreshing page a lot
+builder.Services.AddOutputCache(options =>
+{
+    options.AddPolicy("OutputCacheDemonstrator" ,p => p.Expire(TimeSpan.FromSeconds(30)));
+});
+
 var app = builder.Build();
 
 // Development Swagger check
@@ -58,6 +64,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseOutputCache();
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
