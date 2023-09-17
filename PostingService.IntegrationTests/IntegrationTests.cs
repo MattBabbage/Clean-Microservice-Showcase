@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
 using System.Text.Json;
-
+using Xunit;
 public class IntegrationTests
 {
     //Aim: Test the main functionality of the application using the whole system (CRUD)

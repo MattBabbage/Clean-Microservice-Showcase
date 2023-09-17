@@ -10,7 +10,7 @@ using System.Net;
 
 public static class StatusAPI
 {
-
+    //Separation into seperate class to make minimal api more easily readable
     public static void ConfigureAPI(this WebApplication app)
     {
         app.MapPost("/Status", (StatusRequest status, IHttpClientFactory httpClientFactory, IMongoCollection<Status> collection, IDistributedCache cache, IConfiguration config) => 

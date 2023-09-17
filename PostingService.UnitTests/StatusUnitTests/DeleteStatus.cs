@@ -1,13 +1,7 @@
 namespace PostingService.UnitTests;
 using StatusAPI;
-using MongoDB.Driver;
-using EphemeralMongo;
 using FluentAssertions;
-using Moq;
 using StatusDefinition;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 public class DeleteStatusTests : BaseUnitTest

@@ -1,16 +1,12 @@
 namespace PostingService.UnitTests;
-using StatusAPI;
 using MongoDB.Driver;
 using EphemeralMongo;
-using FluentAssertions;
 using Moq;
 using StatusDefinition;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Configuration;
 using Moq.Protected;
 using System.Text.Json;
 
@@ -25,17 +21,7 @@ public partial class BaseUnitTest
     protected IMongoCollection<Status> Collection {get; set;}
     
     public BaseUnitTest(){
-        // Setup MongoDB Options
-        var options = new MongoRunnerOptions
-        {
-            MongoPort = 27017,
-            KillMongoProcessesWhenCurrentProcessExits = true // Default: false
-        };
-        //Create InMemory MongoDB Mocks
-        MongoDBExecutor = MongoRunner.Run();
-        InMemoryDatabase = new MongoClient(MongoDBExecutor.ConnectionString).GetDatabase("default");
-        InMemoryDatabase.CreateCollection("InMemory_statuses");
-        Collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
+        // Mock HTTP Request
         //Setup generic return from http request
         httpStatusLocation = new StatusLocation(){
                     City = "Test",
@@ -55,9 +41,13 @@ public partial class BaseUnitTest
             };
         MockHttpClientFactory = new Mock<IHttpClientFactory>();
         MockHttpClientFactory.Setup(_ => _.CreateClient("Location")).Returns(httpClient);
+
+        // Mock Redis Cache
         //Create InMemory Cache
         var opts = Options.Create(new MemoryDistributedCacheOptions());
         MockRedisCache = new MemoryDistributedCache(opts);
+        
+        // Mock Configuration
         //Setup Config - Needed for API Key 
         var myConfiguration = new Dictionary<string, string>
         {
@@ -66,5 +56,20 @@ public partial class BaseUnitTest
         MockConfiguration = new ConfigurationBuilder()
             .AddInMemoryCollection(myConfiguration)
             .Build();
+
+        //  MONGODB - In Memory
+        //Setup MongoDB Options
+        var options = new MongoRunnerOptions
+        {
+            MongoPort = 27017,
+            //Ensure processes are cancelled on disposal
+            KillMongoProcessesWhenCurrentProcessExits = true
+        };
+        //Create InMemory MongoDB Mocks
+        MongoDBExecutor = MongoRunner.Run();
+        InMemoryDatabase = new MongoClient(MongoDBExecutor.ConnectionString).GetDatabase("default");
+        InMemoryDatabase.CreateCollection("InMemory_statuses");
+        Collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
+
     }
 }

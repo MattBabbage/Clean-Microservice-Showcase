@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Adding Swagger support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -32,7 +31,7 @@ builder.Services.AddRateLimiter(_ => _
         options.QueueLimit = 2; //Maximum cumulative permit count of queued acquisition requests.
     }));
 
-// Setup our HTTPClients using IHttpClientFactory Pattern 
+// Setup our HTTPClients using IHttpClientFactory Pattern - Best Practice as of 17/09/23
 // https://learn.microsoft.com/en-us/aspnet/core/fundamentals/http-requests?view=aspnetcore-7.0
 builder.Services.AddHttpClient("Location", httpClient =>
 {
@@ -53,7 +52,7 @@ builder.Services.AddSingleton(provider => provider.GetRequiredService<IMongoData
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Development Swagger check
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -62,7 +61,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
-//Configuring custom endpoints
+
+//Configuring custom endpoints from static class StatusAPI
 app.ConfigureAPI();
 
 app.Run();
