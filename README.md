@@ -77,7 +77,7 @@ docker run -d -p 27017:27017 --name posting-mongo mongo:latest
 
 *Note: If using different ports or hosting externally, change appsettings.json to reflect this*
 
-## Publish as a Microservice:
+## Publish as a Microservice: 🚢
 
 Project is formatted so you can use new dotnet publish rather than dockerfiles to create a microservice.
 Disable Development Swagger check in program cs if you want it visible.
