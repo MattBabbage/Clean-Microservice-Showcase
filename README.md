@@ -18,6 +18,7 @@ It Creates posts and attatches a location on creation based on IP. It also provi
 
 - Documentation/Comments via Swagger ✅ (Wanted to learn how to do this on a minimal API)
 - Basic Rate Limiting ✅ (Core feature of most APIs)
+- Output Caching ✅ (New feature in .Net 7)
 
 **Does not include:**
 
