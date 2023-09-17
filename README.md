@@ -57,5 +57,20 @@ cd into PostingService.UnitTests and run 'dotnet test'
 
 **Live / Integration Testing** ⚡
 
-Requires Redis and MongoDB (Locally or via Cloud).
-Add connection strings for both into appsettings.json.
+Create an free API Key here:
+https://www.abstractapi.com/api/ip-geolocation-api
+
+```
+dotnet user-secrets set "Location:ApiKey" "{Your API Key}"
+```
+
+Either host Redis/MongoDB Externally or if using docker desktop:
+
+```
+//Create redis cache
+docker run -d -p 6379:6379 --name posting-redis redis:latest
+//Create mongodb database
+docker run -d -p 27017:27017 --name posting-mongo mongo:latest
+```
+
+*Note: If using different ports or hosting externally, change appsettings.json to reflect this*
