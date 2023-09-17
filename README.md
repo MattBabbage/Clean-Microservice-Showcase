@@ -11,7 +11,7 @@ It Creates posts and attatches a location on creation based on IP. It also provi
 
 - Service should maintain a cache ✅
 - Service should maintain a persistent store of the looked-up values ✅
-- Unit tests ⏳
+- Unit tests ✅
 - Integration tests ✅
 
 **Extra things I have added:** 
