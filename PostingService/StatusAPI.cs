@@ -13,6 +13,7 @@ public static class StatusAPI
     //Separation into seperate class to make minimal api more easily readable
     public static void ConfigureAPI(this WebApplication app)
     {
+        //Declare all endpoints
         app.MapPost("/Status", (StatusRequest status, IHttpClientFactory httpClientFactory, IMongoCollection<Status> collection, IDistributedCache cache, IConfiguration config) => 
                                 CreateStatus(status, httpClientFactory, collection, cache, config))
                                 .WithMetadata(new SwaggerOperationAttribute("Post a Status", "This allows users to post a status"))
@@ -35,7 +36,6 @@ public static class StatusAPI
                                 .WithMetadata(new SwaggerOperationAttribute("Delete a status", "Delete one status based on id"))
                                 .RequireRateLimiting("fixed");
     }
-
 
     public static async Task<IResult> CreateStatus(StatusRequest statusRequest, IHttpClientFactory locationClientFactory, IMongoCollection<Status> collection, IDistributedCache cache,  IConfiguration config){
         //Validate IP address

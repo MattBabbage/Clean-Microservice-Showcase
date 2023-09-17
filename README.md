@@ -53,8 +53,8 @@ Git clone this repo
 
 **Unit testing** 🧑‍🔬
 
-Should run out of the box. (cd into PostingService.UnitTests and run 'dotnet test')
-It take <1m, but in memory mongodb can cause slow downs.
+Should run out of the box (cd into PostingService.UnitTests and run 'dotnet test').
+It should take <1m, but in memory mongodb can cause slow downs.
 
 **Live / Integration Testing** ⚡
 
@@ -76,3 +76,14 @@ docker run -d -p 27017:27017 --name posting-mongo mongo:latest
 ```
 
 *Note: If using different ports or hosting externally, change appsettings.json to reflect this*
+
+## Publish as a Microservice:
+
+Project is formatted so you can use new dotnet publish rather than dockerfiles to create a microservice.
+Disable Development Swagger check in program cs if you want it visible.
+
+```
+dotnet publish --os linux --arch x64 -c Release -p:PublishProfile=DefaultContainer
+
+docker run -it --rm -p 5010:80 postingservice:1.0.0 nslookup host.docker.internal
+```
