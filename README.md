@@ -7,6 +7,8 @@ It is a CRUD application for a 'travel social media company' to create posts/sta
 
 It Creates posts and attatches a location on creation based on IP. It also provides the other standard functionality which is expected of CRUD APIs.
 
+![Diagram](readme.png)
+
 **Things it does include:**
 
 - Service should maintain a cache ✅
