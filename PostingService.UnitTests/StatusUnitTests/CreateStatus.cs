@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 public class CreateStatusTests : BaseUnitTest
 {
     [Fact]
-    public void CreateStatus_Standard()
+    public async Task CreateStatus_Standard()
     {
         // Arrange
         //No need to create data - testing data not found
@@ -17,7 +17,7 @@ public class CreateStatusTests : BaseUnitTest
             Message = ""
         };
         // Act
-        var creationResponse = StatusAPI.CreateStatus(statusRequest, MockHttpClientFactory.Object, Collection, MockRedisCache, MockConfiguration).Result as Ok<Status>;
+        var creationResponse = await StatusAPI.CreateStatus(statusRequest, MockHttpClientFactory.Object, Collection, MockRedisCache, MockConfiguration) as Ok<Status>;
         // Assert
         // Tested method with data found aswell, works as expected
         creationResponse.StatusCode.Should().Be(200);
@@ -25,7 +25,7 @@ public class CreateStatusTests : BaseUnitTest
     }
 
     [Fact]
-    public void CreateStatus_BadIp()
+    public async Task CreateStatus_BadIp()
     {
         StatusRequest statusRequest = new StatusRequest(){
             IPAddress = "NotAnIp",
@@ -33,7 +33,7 @@ public class CreateStatusTests : BaseUnitTest
             Message = ""
         };
         // Act
-        var creationResponse = StatusAPI.CreateStatus(statusRequest, MockHttpClientFactory.Object, Collection, MockRedisCache, MockConfiguration).Result as BadRequest<string>;
+        var creationResponse = await StatusAPI.CreateStatus(statusRequest, MockHttpClientFactory.Object, Collection, MockRedisCache, MockConfiguration) as BadRequest<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         creationResponse.StatusCode.Should().Be(400);

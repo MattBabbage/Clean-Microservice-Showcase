@@ -8,7 +8,7 @@ public class DeleteStatusTests : BaseUnitTest
 {
     //GetStatus Tests
     [Fact]
-    public void DeleteStatus_WithId()
+    public async Task DeleteStatus_WithId()
     {
         // Arrange
         //Create mock data
@@ -24,31 +24,31 @@ public class DeleteStatusTests : BaseUnitTest
         };
         Collection.InsertOne(InMemStatus);
         // Act
-        var RetrievedStatus = StatusAPI.DeleteStatus(InMemStatus.Id, Collection).Result as Ok<string>;
+        var RetrievedStatus = await StatusAPI.DeleteStatus(InMemStatus.Id, Collection) as Ok<string>;
         // Assert
         // Should be equivalent to acts as a deep copy check
         RetrievedStatus.StatusCode.Should().Be(200);
     }
     
     [Fact]
-    public void GetStatus_WithWrongId()
+    public async Task GetStatus_WithWrongId()
     {
         // Arrange
         //No need to create data - testing data not found
         // Act
-        var RetrievedStatus = StatusAPI.DeleteStatus("ecc253b967a1b0067240e333", Collection).Result as NotFound<string>;
+        var RetrievedStatus = await StatusAPI.DeleteStatus("ecc253b967a1b0067240e333", Collection) as NotFound<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(404);
     }
 
     [Fact]
-    public void GetStatus_WithInvalidId()
+    public async Task GetStatus_WithInvalidId()
     {
         // Arrange
         //No need to create data
         // Act
-        var RetrievedStatus = StatusAPI.DeleteStatus(":)", Collection).Result as BadRequest<string>;
+        var RetrievedStatus = await StatusAPI.DeleteStatus(":)", Collection) as BadRequest<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(400);

@@ -8,18 +8,18 @@ public class GetStatusesTests : BaseUnitTest
 {
     //GetStatus Tests
     [Fact]
-    public void GetStatuses_EmptyDB()
+    public async Task GetStatuses_EmptyDB()
     {
         // Arrange
         // Act
-        var RetrievedStatuses = StatusAPI.GetStatuses(Collection, 1, 10).Result as Ok<List<Status>>;
+        var RetrievedStatuses = await StatusAPI.GetStatuses(Collection, 1, 10) as Ok<List<Status>>;
         // Assert
         // Should get empty array
         RetrievedStatuses.StatusCode.Should().Be(200);
         RetrievedStatuses.Value.Should().BeEquivalentTo(new List<Status>());
     }
     [Fact]
-    public void GetStatuses_NotEmptyDB()
+    public async Task GetStatuses_NotEmptyDB()
     {
         // Arrange
         //Create mock data
@@ -35,7 +35,7 @@ public class GetStatusesTests : BaseUnitTest
         };
         Collection.InsertOne(InMemStatus);
         // Act
-        var RetrievedStatuses = StatusAPI.GetStatuses(Collection, 1, 10).Result as Ok<List<Status>>;
+        var RetrievedStatuses = await StatusAPI.GetStatuses(Collection, 1, 10) as Ok<List<Status>>;
         // Assert
         // Should be equivalent to acts as a deep copy check
         RetrievedStatuses.StatusCode.Should().Be(200);
@@ -44,22 +44,22 @@ public class GetStatusesTests : BaseUnitTest
 
     //GetStatus Tests
     [Fact]
-    public void GetStatuses_InvalidPage()
+    public async Task GetStatuses_InvalidPage()
     {
         // Arrange
         // Act
-        var RetrievedStatuses = StatusAPI.GetStatuses(Collection, -1, 10).Result as BadRequest<string>;
+        var RetrievedStatuses = await StatusAPI.GetStatuses(Collection, -1, 10) as BadRequest<string>;
         // Assert
         RetrievedStatuses.StatusCode.Should().Be(400);
     }
 
         //GetStatus Tests
     [Fact]
-    public void GetStatuses_InvalidPageSize()
+    public async void GetStatuses_InvalidPageSize()
     {
         // Arrange
         // Act
-        var RetrievedStatuses = StatusAPI.GetStatuses(Collection, 1, -10).Result as BadRequest<string>;
+        var RetrievedStatuses = await StatusAPI.GetStatuses(Collection, 1, -10) as BadRequest<string>;
         // Assert
         RetrievedStatuses.StatusCode.Should().Be(400);
     }

@@ -37,7 +37,7 @@ public class IntegrationTests
         using var client = application.CreateClient();
 
         // Act
-        var result = client.GetAsync("/Statuses?page=1&pageSize=5").Result;
+        var result = await client.GetAsync("/Statuses?page=1&pageSize=5");
         var content = await result.Content.ReadFromJsonAsync<List<Status>>();
         // Assert
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);

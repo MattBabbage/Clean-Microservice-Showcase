@@ -8,7 +8,7 @@ public class UpdateStatusTests : BaseUnitTest
 {
     //GetStatus Tests
     [Fact]
-    public void UpdateStatus_WithId()
+    public async Task UpdateStatus_WithId()
     {
         // Arrange
         //Create mock data
@@ -27,31 +27,31 @@ public class UpdateStatusTests : BaseUnitTest
         //Edit Data to test update
         InMemStatus.Title = "ChangedTitle";
         // Act
-        var RetrievedStatus = StatusAPI.UpdateStatus(InMemStatus.Id, InMemStatus, Collection).Result as Ok<Status>;
+        var RetrievedStatus = await StatusAPI.UpdateStatus(InMemStatus.Id, InMemStatus, Collection) as Ok<Status>;
         // Assert
         // Should be equivalent to acts as a deep copy check
         InMemStatus.Should().BeEquivalentTo(RetrievedStatus.Value);
     }
     
     [Fact]
-    public void UpdateStatus_WithWrongId()
+    public async Task UpdateStatus_WithWrongId()
     {
         // Arrange
         string fakeId = "ecc253b967a1b0067240e333";
         // Act
-        var RetrievedStatus = StatusAPI.UpdateStatus(fakeId, new Status(), Collection).Result as NotFound<string>;
+        var RetrievedStatus = await StatusAPI.UpdateStatus(fakeId, new Status(), Collection) as NotFound<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(404);
     }
 
     [Fact]
-    public void UpdateStatus_WithInvalidId()
+    public async Task UpdateStatus_WithInvalidId()
     {
         // Arrange
         string invalidId = ":)";
         // Act
-        var RetrievedStatus = StatusAPI.UpdateStatus(invalidId, new Status(), Collection).Result as BadRequest<string>;
+        var RetrievedStatus = await StatusAPI.UpdateStatus(invalidId, new Status(), Collection) as BadRequest<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(400);

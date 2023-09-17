@@ -8,7 +8,7 @@ public class GetStatusTests : BaseUnitTest
 {
     //GetStatus Tests
     [Fact]
-    public void GetStatus_WithId()
+    public async Task GetStatus_WithId()
     {
         // Arrange
         //Create mock data
@@ -24,31 +24,31 @@ public class GetStatusTests : BaseUnitTest
         };
         Collection.InsertOne(InMemStatus);
         // Act
-        var RetrievedStatus = StatusAPI.GetStatus(InMemStatus.Id, Collection).Result as Ok<Status>;
+        var RetrievedStatus = await StatusAPI.GetStatus(InMemStatus.Id, Collection) as Ok<Status>;
         // Assert
         // Should be equivalent to acts as a deep copy check
         InMemStatus.Should().BeEquivalentTo(RetrievedStatus.Value);
     }
     
     [Fact]
-    public void GetStatus_WithWrongId()
+    public async Task GetStatus_WithWrongId()
     {
         // Arrange
         //No need to create data - testing data not found
         // Act
-        var RetrievedStatus = StatusAPI.GetStatus("ecc253b967a1b0067240e333", Collection).Result as NotFound<string>;
+        var RetrievedStatus = await StatusAPI.GetStatus("ecc253b967a1b0067240e333", Collection) as NotFound<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(404);
     }
 
     [Fact]
-    public void GetStatus_WithInvalidId()
+    public async Task GetStatus_WithInvalidId()
     {
         // Arrange
         //No need to create data
         // Act
-        var RetrievedStatus = StatusAPI.GetStatus(":)", Collection).Result as BadRequest<string>;
+        var RetrievedStatus = await StatusAPI.GetStatus(":)", Collection) as BadRequest<string>;
         // Assert
         // Tested method with data found aswell, works as expected
         RetrievedStatus.StatusCode.Should().Be(400);

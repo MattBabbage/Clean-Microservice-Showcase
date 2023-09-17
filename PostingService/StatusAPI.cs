@@ -70,7 +70,7 @@ public static class StatusAPI
                 var client = locationClientFactory.CreateClient("Location");
                 HttpResponseMessage locationResponse = await client.GetAsync($"?api_key={config["Location:ApiKey"]}&ip_address={statusRequest.IPAddress}");
                 //Create Object
-                location = JsonSerializer.Deserialize<StatusLocation>(locationResponse.Content.ReadAsStringAsync().Result);
+                location = JsonSerializer.Deserialize<StatusLocation>(await locationResponse.Content.ReadAsStringAsync());
                 var options = new DistributedCacheEntryOptions(); // create options object
                 //Save 30 Min cache on IP, people may want to write many posts in a row, saves api calls
                 options.SetSlidingExpiration(TimeSpan.FromMinutes(30)); 

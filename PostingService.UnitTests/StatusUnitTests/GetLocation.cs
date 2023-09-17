@@ -10,7 +10,7 @@ using System.Text.Json;
 public class GetLocationTests : BaseUnitTest
 {
     [Fact]
-    public void GetLocation_StandardAPICall()
+    public async Task GetLocation_StandardAPICall()
     {
         // Arrange
         //No need to create data - testing data not found
@@ -20,14 +20,14 @@ public class GetLocationTests : BaseUnitTest
             Message = ""
         };
         // Act
-        var location = StatusAPI.GetLocation(statusRequest, MockRedisCache, MockHttpClientFactory.Object, MockConfiguration).Result;
+        var location = await StatusAPI.GetLocation(statusRequest, MockRedisCache, MockHttpClientFactory.Object, MockConfiguration);
         // Assert
         // Tested method with data found aswell, works as expected
         location.Should().BeEquivalentTo(httpStatusLocation);
     }
 
     [Fact]
-    public void GetLocation_IPCached()
+    public async Task GetLocation_IPCached()
     {
         var cachedLocation = new StatusLocation(){
                     City = "Cached",
@@ -43,7 +43,7 @@ public class GetLocationTests : BaseUnitTest
             Message = ""
         };
         // Act
-        var location = StatusAPI.GetLocation(statusRequest, MockRedisCache, MockHttpClientFactory.Object, MockConfiguration).Result;
+        var location = await StatusAPI.GetLocation(statusRequest, MockRedisCache, MockHttpClientFactory.Object, MockConfiguration);
         // Assert
         // Tested method with data found aswell, works as expected
         location.Should().BeEquivalentTo(cachedLocation);
