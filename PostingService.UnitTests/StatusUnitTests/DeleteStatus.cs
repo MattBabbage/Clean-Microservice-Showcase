@@ -10,18 +10,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-public class DeleteStatusTests
+public class DeleteStatusTests : BaseUnitTest
 {
-    public IMongoRunner MongoDBExecutor {get; set;}
-    public IMongoDatabase InMemoryDatabase {get;set;}
-    public IMongoCollection<Status> Collection {get; set;}
-    public DeleteStatusTests(){
-        MongoDBExecutor = MongoRunner.Run();
-        InMemoryDatabase = new MongoClient(MongoDBExecutor.ConnectionString).GetDatabase("default");
-        InMemoryDatabase.CreateCollection("InMemory_statuses");
-        Collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
-    }
-
     //GetStatus Tests
     [Fact]
     public void DeleteStatus_WithId()

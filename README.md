@@ -1,4 +1,4 @@
-## Design Decisions:
+## Example Minimal API:
 **What is this project?**
 
 This is a Microservice created using the Minimal API Structure.
@@ -40,3 +40,19 @@ Chose to use Redis in an external store (Distributed Caching). This allows the s
 MongoDB is used as a Database for:
 - Small singular table - would never use relational features of an RDBMS
 - Ease of use and setup - Emphasis is on the code not the use case
+
+
+## How to run:
+
+Git clone this repo
+
+**Unit testing** 🧑‍🔬
+
+Should run out of the box. 
+
+cd into PostingService.UnitTests and run 'dotnet test'
+
+**Live / Integration Testing** ⚡
+
+Requires Redis and MongoDB (Locally or via Cloud).
+Add connection strings for both into appsettings.json.

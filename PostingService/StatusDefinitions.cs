@@ -24,7 +24,8 @@ namespace StatusDefinition
     
     public class StatusLocation
     {
-        //Serialization from snake case is only supported by 3rd party lib, hence [JsonPropertyName(snake_case_equivilant)]
+        //Serialization from snake case, which comes back from api call,
+        //is only supported by 3rd party lib which can be avoided easily (hence [JsonPropertyName(snake_case_equivilant)])
         [JsonPropertyName("city")]
         public string City { get; set; } = null!;
         [JsonPropertyName("region")]

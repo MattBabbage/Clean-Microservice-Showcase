@@ -6,6 +6,7 @@ using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Swashbuckle.AspNetCore.Annotations;
 using MongoDB.Bson;
+using System.Net;
 
 public static class StatusAPI
 {
@@ -36,6 +37,9 @@ public static class StatusAPI
 
 
     public static async Task<IResult> CreateStatus(StatusRequest statusRequest, IHttpClientFactory locationClientFactory, IMongoCollection<Status> collection, IDistributedCache cache,  IConfiguration config){
+        //Validate IP address
+        if (!IPAddress.TryParse(statusRequest.IPAddress, out _))
+            return Results.BadRequest("Bad ip address");
         //Get the location from the IP Address
         StatusLocation? location = await GetLocation(statusRequest, cache, locationClientFactory, config);
         //Check location found
@@ -68,7 +72,8 @@ public static class StatusAPI
                 //Create Object
                 location = JsonSerializer.Deserialize<StatusLocation>(locationResponse.Content.ReadAsStringAsync().Result);
                 var options = new DistributedCacheEntryOptions(); // create options object
-                options.SetSlidingExpiration(TimeSpan.FromSeconds(10)); // 10 Second sliding expiration
+                //Save 30 Min cache on IP, people may want to write many posts in a row, saves api calls
+                options.SetSlidingExpiration(TimeSpan.FromMinutes(30)); 
                 await cache.SetAsync(statusRequest.IPAddress, Encoding.UTF8.GetBytes(JsonSerializer.Serialize(location)), options);
             }
             return location;
@@ -89,6 +94,7 @@ public static class StatusAPI
             return Results.Ok(new List<Status>());
         return Results.Ok(data);
     }
+
     public static async Task<IResult> GetStatus(string id, IMongoCollection<Status> collection){
         //Validate id - No possibility of injection but helps user in diagnosis
         if (!ObjectId.TryParse(id, out _))

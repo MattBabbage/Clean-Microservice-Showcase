@@ -13,10 +13,10 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Configuration;
 using Moq.Protected;
 using System.Text.Json;
-public class GetLocationTests : BaseUnitTest
+public class CreateStatusTests : BaseUnitTest
 {
     [Fact]
-    public void GetLocation_StandardAPICall()
+    public void CreateStatus_Standard()
     {
         // Arrange
         //No need to create data - testing data not found
@@ -26,32 +26,25 @@ public class GetLocationTests : BaseUnitTest
             Message = ""
         };
         // Act
-        var location = StatusAPI.GetLocation(statusRequest, MockRedisCache, MockHttpClientFactory.Object, MockConfiguration).Result;
+        var creationResponse = StatusAPI.CreateStatus(statusRequest, MockHttpClientFactory.Object, Collection, MockRedisCache, MockConfiguration).Result as Ok<Status>;
         // Assert
         // Tested method with data found aswell, works as expected
-        location.Should().BeEquivalentTo(httpStatusLocation);
+        creationResponse.StatusCode.Should().Be(200);
+        creationResponse.Value.Title.Should().Be(statusRequest.Title);
     }
 
     [Fact]
-    public void GetLocation_IPCached()
+    public void CreateStatus_BadIp()
     {
-        var cachedLocation = new StatusLocation(){
-                    City = "Cached",
-                    Region = "Cached",
-                    Country = "Cached"};
-        var expectedData = JsonSerializer.SerializeToUtf8Bytes(cachedLocation);
-        // Arrange
-        //No need to create data - testing data not found
-        MockRedisCache.Set("1.0.0.127", expectedData);
         StatusRequest statusRequest = new StatusRequest(){
-            IPAddress = "1.0.0.127",
+            IPAddress = "NotAnIp",
             Title = "",
             Message = ""
         };
         // Act
-        var location = StatusAPI.GetLocation(statusRequest, MockRedisCache, MockHttpClientFactory.Object, MockConfiguration).Result;
+        var creationResponse = StatusAPI.CreateStatus(statusRequest, MockHttpClientFactory.Object, Collection, MockRedisCache, MockConfiguration).Result as BadRequest<string>;
         // Assert
         // Tested method with data found aswell, works as expected
-        location.Should().BeEquivalentTo(cachedLocation);
+        creationResponse.StatusCode.Should().Be(400);
     }
 }

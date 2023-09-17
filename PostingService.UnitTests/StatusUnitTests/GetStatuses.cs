@@ -10,18 +10,8 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-public class GetStatusesTests
+public class GetStatusesTests : BaseUnitTest
 {
-    public IMongoRunner MongoDBExecutor {get; set;}
-    public IMongoDatabase InMemoryDatabase {get;set;}
-    public IMongoCollection<Status> Collection {get; set;}
-    public GetStatusesTests(){
-        MongoDBExecutor = MongoRunner.Run();
-        InMemoryDatabase = new MongoClient(MongoDBExecutor.ConnectionString).GetDatabase("default");
-        InMemoryDatabase.CreateCollection("InMemory_statuses");
-        Collection = InMemoryDatabase.GetCollection<Status>("InMemory_statuses");
-    }
-
     //GetStatus Tests
     [Fact]
     public void GetStatuses_EmptyDB()

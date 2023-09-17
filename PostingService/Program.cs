@@ -22,6 +22,7 @@ builder.Services.AddSwaggerGen(options =>
     options.EnableAnnotations();
 });
 
+//Adding very basic rate limiting 
 builder.Services.AddRateLimiter(_ => _
     .AddFixedWindowLimiter(policyName: "fixed", options =>
     {
@@ -47,8 +48,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 //Setup MongoDB Client Singletons
 builder.Services.AddSingleton(_ => new MongoClient());
-builder.Services.AddSingleton(provider => provider.GetRequiredService<MongoClient>().GetDatabase("status-database"));
-builder.Services.AddSingleton(provider => provider.GetRequiredService<IMongoDatabase>().GetCollection<Status>("statuses"));
+builder.Services.AddSingleton(provider => provider.GetRequiredService<MongoClient>().GetDatabase(builder.Configuration.GetSection("MongoDB")["DatabaseName"]));
+builder.Services.AddSingleton(provider => provider.GetRequiredService<IMongoDatabase>().GetCollection<Status>(builder.Configuration.GetSection("MongoDB")["CollectionName"]));
 
 var app = builder.Build();
 
