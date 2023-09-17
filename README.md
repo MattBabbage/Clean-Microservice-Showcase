@@ -51,15 +51,15 @@ Git clone this repo
 
 **Unit testing** 🧑‍🔬
 
-Should run out of the box. 
-
-cd into PostingService.UnitTests and run 'dotnet test'
+Should run out of the box. (cd into PostingService.UnitTests and run 'dotnet test')
+It take <1m, but in memory mongodb can cause slow downs.
 
 **Live / Integration Testing** ⚡
 
 Create an free API Key here:
 https://www.abstractapi.com/api/ip-geolocation-api
 
+Add the api key as the following secret:
 ```
 dotnet user-secrets set "Location:ApiKey" "{Your API Key}"
 ```
