@@ -14,25 +14,30 @@ public static class StatusAPI
     public static void ConfigureAPI(this WebApplication app)
     {
         //Declare all endpoints
-        app.MapPost("/Status", (StatusRequest status, IHttpClientFactory httpClientFactory, IMongoCollection<Status> collection, IDistributedCache cache, IConfiguration config) => 
+        app.MapPost("/Status", [SwaggerResponse(200, "Success")] [SwaggerResponse(400, "Bad Request")] [SwaggerResponse(404, "Not Found")]
+                                (StatusRequest status, IHttpClientFactory httpClientFactory, IMongoCollection<Status> collection, IDistributedCache cache, IConfiguration config) => 
                                 CreateStatus(status, httpClientFactory, collection, cache, config))
                                 .WithMetadata(new SwaggerOperationAttribute("Post a Status", "This allows users to post a status"))
                                 .RequireRateLimiting("fixed");
 
-        app.MapGet("/Statuses", (IMongoCollection<Status> collection, int page, int pageSize) => GetStatuses(collection, page, pageSize))
+        app.MapGet("/Statuses", [SwaggerResponse(200, "Success")] [SwaggerResponse(400, "Bad Request")] 
+                                (IMongoCollection<Status> collection, int page, int pageSize) => GetStatuses(collection, page, pageSize))
                                 .WithMetadata(new SwaggerOperationAttribute("Get all statuses in a paged fashion", "Get all data using a page and page size"))
                                 .RequireRateLimiting("fixed")
                                 .CacheOutput("OutputCacheDemonstrator"); //Only caching output here as this is the only return with possible large data packet
 
-        app.MapGet("/Status/{id}", (string id, IMongoCollection<Status> collection) =>  GetStatus(id, collection))
+        app.MapGet("/Status/{id}", [SwaggerResponse(200, "Success")] [SwaggerResponse(400, "Bad Request")] [SwaggerResponse(404, "Not Found")]
+                                 (string id, IMongoCollection<Status> collection) =>  GetStatus(id, collection))
                                 .WithMetadata(new SwaggerOperationAttribute("Get singular status", "Get a singular status based on id"))
                                 .RequireRateLimiting("fixed");
 
-        app.MapPut("/Status/{id}", (string id, Status updatedStatus,IMongoCollection<Status> collection) =>  UpdateStatus(id, updatedStatus, collection))
+        app.MapPut("/Status/{id}", [SwaggerResponse(200, "Success")] [SwaggerResponse(400, "Bad Request")] [SwaggerResponse(404, "Not Found")]
+                                 (string id, Status updatedStatus,IMongoCollection<Status> collection) =>  UpdateStatus(id, updatedStatus, collection))
                                 .WithMetadata(new SwaggerOperationAttribute("Update a status", "Update status based on ID"))
                                 .RequireRateLimiting("fixed");
 
-        app.MapDelete("/Status/{id}", (string id, IMongoCollection<Status> collection) =>  DeleteStatus(id, collection))
+        app.MapDelete("/Status/{id}", [SwaggerResponse(200, "Success")] [SwaggerResponse(400, "Bad Request")] [SwaggerResponse(404, "Not Found")]
+                                 (string id, IMongoCollection<Status> collection) =>  DeleteStatus(id, collection))
                                 .WithMetadata(new SwaggerOperationAttribute("Delete a status", "Delete one status based on id"))
                                 .RequireRateLimiting("fixed");
     }
