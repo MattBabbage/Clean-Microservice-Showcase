@@ -134,6 +134,6 @@ public static class StatusAPI
         if (deletion.DeletedCount == 1) 
             return Results.Ok("Deleted");
         //Not Deleted, not found
-        return Results.NotFound("Deleted");
+        return Results.NotFound("Not Found");
     }
 }
