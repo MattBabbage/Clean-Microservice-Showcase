@@ -24,8 +24,8 @@ It Creates posts and attatches a location on creation based on IP. It also provi
 
 **Does not include:**
 
-- Authentication ❌ - Avoid overcomplication/Not in spec
-- Authorization ❌ - Avoid overcomplication/Not in spec
+- Authentication ❌ - Avoid overcomplication
+- Authorization ❌ - Avoid overcomplication
 - IP from HTTP Context ❌ - More difficult to demonstrate and debug.
 
 
